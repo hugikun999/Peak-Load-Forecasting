@@ -18,6 +18,7 @@ def process_parser():
     parser.add_argument('--model', default='lstm', type=str,
                         help='Use which model, lstm or cnn')
     parser.add_argument('--ParamsName', default='predict.params', type=str)
+    parser.add_argument('--SaveEpoch', default=[15], type=list)
     return parser.parse_args()
 
 def get_model_ctx(args):
@@ -37,7 +38,6 @@ def get_model_ctx(args):
 
 if __name__== '__main__':
     args = process_parser()
-
     for preday in args.PredayList:
         net, ctx = get_model_ctx(args)
         net.initialize()
@@ -85,7 +85,8 @@ if __name__== '__main__':
                     RMSE /= val_dataset.__len__()
                     print('Preday[{}]Epoch[{}]Iter[{}]\tRMSE:\t{}\n'.format(preday, epoch, idx, RMSE))
 
-            if epoch == 15:
+            if epoch in args.SaveEpoch:
                 savename = args.ParamsName[:-7] + '_{}'.format(epoch) + args.ParamsName[-7:]
                 net.save_parameters(savename)
+
         net.save_parameters(args.ParamsName)
