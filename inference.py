@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 import mxnet as mx
 from Net import lstm, Net
 from electric_dataset_pd import electric_dataset
@@ -50,6 +51,8 @@ if __name__ == '__main__':
     maxvalue = dataset.maxvalue
     minvalue = dataset.minvalue
     mean = dataset.mean
+    preds = []
+    gts = []
     for batch, (x, y) in enumerate(data):
         x = x.as_in_context(ctx)
         y = y.asnumpy().reshape(-1)
@@ -62,5 +65,14 @@ if __name__ == '__main__':
         pred = (pred * (maxvalue[0] - minvalue[0])) + mean[0]
         y = (y * (maxvalue[0] - minvalue[0])) + mean[0]
         RMSE += np.sqrt(((pred - y) ** 2).mean())
+        preds.append(pred)
+        gts.append(y)
     RMSE /= dataset.__len__()
     print('RMSE:\t{}\n'.format(RMSE))
+    preds = np.concatenate(preds)
+    gts = np.concatenate(gts)
+    plt.title('Result')
+    plt.plot(np.arange(preds.shape[0]), preds, label='pred')
+    plt.plot(np.arange(gts.shape[0]), gts, label='gt')
+    plt.legend()
+    plt.show()
