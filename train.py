@@ -7,18 +7,19 @@ from electric_dataset_pd import electric_dataset
 
 def process_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--PredayList', default=[60], type=list,
+    parser.add_argument('--PredayList', default=60, nargs='+', type=int,
                       help='how many days used to train model')
-    parser.add_argument('--FeatureList', default=[1, -3], type=list,
+    parser.add_argument('--FeatureList', default=[1, -3], nargs='+', type=int,
                       help='which feature used to train model')
-    parser.add_argument('--IgnoreNorList', default=[-3], type=list,
+    parser.add_argument('--IgnoreNorList', default=[-3], nargs='+', type=int,
                         help='which feature needed to ignore normalization')
     parser.add_argument('--gpus', default=0, type=int,
                         help='gpu id, -1 mean use cpu')
     parser.add_argument('--model', default='lstm', type=str,
                         help='Use which model, lstm or cnn')
-    parser.add_argument('--ParamsName', default='predict.params', type=str)
-    parser.add_argument('--SaveEpoch', default=[15], type=list)
+    parser.add_argument('--ParamsNameList', default=['predict.params'], nargs='+', type=str)
+    parser.add_argument('--SaveEpoch', default=[15], nargs='+', type=int)
+    parser.add_argument('--MaxEpoch', default=100, type=int)
     return parser.parse_args()
 
 def get_model_ctx(args):
@@ -38,7 +39,9 @@ def get_model_ctx(args):
 
 if __name__== '__main__':
     args = process_parser()
-    for preday in args.PredayList:
+    assert len(args.ParamsNameList) == len(args.PredayList), 'length of ParamsNameList and PredayList must be equal'
+
+    for preday, savename in zip(args.PredayList, args.ParamsNameList):
         net, ctx = get_model_ctx(args)
         net.initialize()
         net.collect_params().reset_ctx(ctx)
@@ -52,7 +55,7 @@ if __name__== '__main__':
         train_iter = mx.gluon.data.DataLoader(train_dataset, 1, shuffle=True)
         val_iter = mx.gluon.data.DataLoader(val_dataset, 1, shuffle=False)
 
-        for epoch in range(100):
+        for epoch in range(args.MaxEpoch):
             if epoch+1 == 10:
                 lr = trainer.learning_rate
                 trainer.set_learning_rate(lr * 0.1)
@@ -86,7 +89,7 @@ if __name__== '__main__':
                     print('Preday[{}]Epoch[{}]Iter[{}]\tRMSE:\t{}\n'.format(preday, epoch, idx, RMSE))
 
             if epoch in args.SaveEpoch:
-                savename = args.ParamsName[:-7] + '_{}'.format(epoch) + args.ParamsName[-7:]
-                net.save_parameters(savename)
+                tmp = savename[:-7] + '_{}'.format(epoch) + savename[-7:]
+                net.save_parameters(tmp)
 
-        net.save_parameters(args.ParamsName)
+        net.save_parameters(savename)

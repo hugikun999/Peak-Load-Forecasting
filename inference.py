@@ -9,9 +9,9 @@ def process_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--Preday', default=60, type=int,
                       help='how many days used to train model')
-    parser.add_argument('--FeatureList', default=[1, -3], type=list,
+    parser.add_argument('--FeatureList', default=[1, -3], nargs='+', type=int,
                       help='which feature used to train model')
-    parser.add_argument('--IgnoreNorList', default=[-3], type=list,
+    parser.add_argument('--IgnoreNorList', default=[-3], nargs='+', type=int,
                         help='which feature needed to ignore normalization')
     parser.add_argument('--start_day', default='20190301', type=str,
                         help='Days after the day you want to predict')
