@@ -7,7 +7,7 @@ from electric_dataset_pd import electric_dataset
 
 def process_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--PredayList', default=60, nargs='+', type=int,
+    parser.add_argument('--PredayList', default=[60], nargs='+', type=int,
                       help='how many days used to train model')
     parser.add_argument('--FeatureList', default=[1, -3], nargs='+', type=int,
                       help='which feature used to train model')
