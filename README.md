@@ -67,3 +67,5 @@ python inference --weights predict.params
 -   Train/Val ratio: 3:1
 -   Optimizer: Adam
 -   Learning rate: 1e-3, decay 0.1 at epoch 10
+
+## [jupyter note](https://nbviewer.jupyter.org/github/hugikun999/Peak-Load-Forecasting/blob/master/forecasting.ipynb)
