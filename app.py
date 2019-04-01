@@ -62,14 +62,12 @@ if __name__ == '__main__':
 
     pred = model(x).asnumpy().reshape(-1)
     pred = np.round((pred * (nor_params[0] - nor_params[1])) + nor_params[2]).astype('int32')
-    print(pred)
     # Process the holiday predicts
     with open('LRM.pickle', 'rb') as f:
         LRmodel = pickle.load(f)
         x = np.array(pred[2:4]).reshape(-1, 1)
         pred_holiday = LRmodel.predict(x).reshape(-1)
         pred[2:4] = pred_holiday
-    print(pred)
     Date = ['20190402', '20190403', '20190404', '20190405', '20190406', '20190407', '20190408']
     df = pd.DataFrame({'date': Date, 'peak_load(MW)': pred})
     df.to_csv('submission.csv', index=False)
