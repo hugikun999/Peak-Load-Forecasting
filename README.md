@@ -54,3 +54,16 @@ After training you will get a `predict.params`.Use the params to be the model we
 python train.py
 python inference --weights predict.params
 ```
+
+## Method
+-  Data 
+
+    - Input: 每日最大負載、周末與否
+    
+    - Normalization: 每日最大負載
+    
+    - Output: 未來7天最大負載
+-   Model: LSTM
+-   Train/Val ratio: 3:1
+-   Optimizer: Adam
+-   Learning rate: 1e-3, decay 0.1 at epoch 10
